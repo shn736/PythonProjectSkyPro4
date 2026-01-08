@@ -73,7 +73,6 @@ class Newsletter(models.Model):
     recipients = models.ManyToManyField(Recipient)
 
     def clean(self):
-        # Валидация полей
         if self.start_time < timezone.now():
             raise ValidationError("Дата начала не может быть в прошлом.")
         if self.start_time >= self.end_time:
@@ -95,7 +94,6 @@ class Newsletter(models.Model):
             self.save()
 
     def save(self, *args, **kwargs):
-        # Вызываем валидацию
         self.clean()
         super().save(*args, **kwargs)
 
