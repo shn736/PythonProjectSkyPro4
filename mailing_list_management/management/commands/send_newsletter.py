@@ -44,6 +44,4 @@ class Command(BaseCommand):
                     )
             self.stdout.write(self.style.SUCCESS("Рассылка успешно отправлена!"))
         else:
-            self.stdout.write(
-                self.style.ERROR("Ошибка: Время для отправки рассылки недоступно.")
-            )
+            self.stdout.write(self.style.ERROR("Ошибка: Время для отправки рассылки недоступно."))

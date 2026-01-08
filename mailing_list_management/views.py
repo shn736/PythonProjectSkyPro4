@@ -1,16 +1,20 @@
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  UpdateView)
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
-from mailing_list_management.forms import (MessageForm, NewsletterForm,
-                                           RecipientForm)
-from mailing_list_management.models import (EmailAttempt, Message, Newsletter,
-                                            Recipient)
+from config.settings import CACHE_ENABLED
+from mailing_list_management.forms import MessageForm, NewsletterForm, RecipientForm
+from mailing_list_management.models import EmailAttempt, Message, Newsletter, Recipient
+from mailing_list_management.services import (
+    get_messages_from_cache,
+    get_newsletters_from_cache,
+    get_recipients_from_cache,
+)
 
 
 def homepage(request):
@@ -51,7 +55,16 @@ class RecipientListView(ListView):
     context_object_name = "recipients"
 
     def get_queryset(self):
-        return Recipient.objects.filter(owner=self.request.user)
+        # Сначала пробуем получить получателей из кеша
+        if not CACHE_ENABLED:
+            return Recipient.objects.filter(owner=self.request.user)
+        recipients = get_recipients_from_cache(self.request.user)
+        if recipients is None:
+            # Если кеш пуст, загружаем получателей из базы данных и кэшируем их
+            recipients = Recipient.objects.filter(owner=self.request.user)
+            cache.set(self.request.user, recipients)
+
+        return recipients
 
 
 class RecipientCreateView(CreateView):
@@ -86,21 +99,26 @@ class RecipientDeleteView(DeleteView):
 # Работы с сообщениями
 class MessageListView(ListView):
     model = Message
-    template_name = (
-        "../templates/MailingListManagement/message_list.html"  # Замените на ваш шаблон
-    )
+    template_name = "../templates/MailingListManagement/message_list.html"  # Замените на ваш шаблон
     context_object_name = "messages"
 
     def get_queryset(self):
-        return Message.objects.filter(owner=self.request.user)
+        # Сначала пробуем получить получателей из кеша
+        if not CACHE_ENABLED:
+            return Message.objects.filter(owner=self.request.user)
+        messages = get_messages_from_cache(self.request.user)
+        if messages is None:
+            # Если кеш пуст, загружаем получателей из базы данных и кэшируем их
+            messages = Message.objects.filter(owner=self.request.user)
+            cache.set(self.request.user, messages)
+
+        return messages
 
 
 class MessageCreateView(CreateView):
     model = Message
     form_class = MessageForm
-    template_name = (
-        "../templates/MailingListManagement/message_form.html"  # Замените на ваш шаблон
-    )
+    template_name = "../templates/MailingListManagement/message_form.html"  # Замените на ваш шаблон
     success_url = reverse_lazy("mailing_list_management:message_list")
 
     def form_valid(self, form):
@@ -116,9 +134,7 @@ class MessageDetailView(DetailView):
 class MessageUpdateView(UpdateView):
     model = Message
     form_class = MessageForm
-    template_name = (
-        "../templates/MailingListManagement/message_form.html"  # Замените на ваш шаблон
-    )
+    template_name = "../templates/MailingListManagement/message_form.html"  # Замените на ваш шаблон
     success_url = reverse_lazy("mailing_list_management:message_list")
 
 
@@ -135,7 +151,16 @@ class NewsletterListView(ListView):
     context_object_name = "newsletters"
 
     def get_queryset(self):
-        return Newsletter.objects.filter(owner=self.request.user)
+        # Сначала пробуем получить получателей из кеша
+        if not CACHE_ENABLED:
+            return Newsletter.objects.filter(owner=self.request.user)
+        newsletters = get_newsletters_from_cache(self.request.user)
+        if newsletters is None:
+            # Если кеш пуст, загружаем получателей из базы данных и кэшируем их
+            newsletters = Newsletter.objects.filter(owner=self.request.user)
+            cache.set(self.request.user, newsletters)
+
+        return newsletters
 
 
 class NewsletterCreateView(CreateView):
@@ -147,11 +172,6 @@ class NewsletterCreateView(CreateView):
     def form_valid(self, form):
         form.instance.owner = self.request.user
         return super().form_valid(form)
-
-
-class NewsletterDetailView(DetailView):
-    model = Newsletter
-    template_name = "../templates/MailingListManagement/newsletter_detail.html"
 
 
 class NewsletterUpdateView(UpdateView):
