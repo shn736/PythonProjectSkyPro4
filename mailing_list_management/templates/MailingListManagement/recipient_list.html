@@ -1,0 +1,42 @@
+{% extends 'MailingListManagement/base.html' %}
+{% load my_tags %}
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Список Получателей</h1>
+
+    <div class="mb-3">
+        <a class="btn btn-success" href="{% url 'mailing_list_management:recipient_create' %}" role="button">Добавить Нового Получателя</a>
+    </div>
+
+    <div class="album bg-body-tertiary">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            {% for recipient in object_list %}
+            {% if recipient.owner == request.user %}
+            <div class="col">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ recipient.name }}</h5>
+                        <p class="card-text">{{ recipient.email }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <a class="btn btn-primary" href="{% url 'mailing_list_management:recipient' recipient.pk %}" role="button">Посмотреть</a>
+                                <a class="btn btn-warning" href="{% url 'mailing_list_management:recipient_update' recipient.pk %}" role="button">Редактировать</a>
+                                <a class="btn btn-danger" href="{% url 'mailing_list_management:recipient_delete' recipient.pk %}"
+                                   onclick="return confirm('Вы уверены, что хотите удалить этого получателя?');" role="button">Удалить</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    Нет получателей для отображения.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

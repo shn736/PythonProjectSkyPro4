@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "pythonprojectskypro4"
+version = "0.1.0"
+description = ""
+authors = ["shn73 <shn-73@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+django = "^6.0.1"
+black = "^25.12.0"
+isort = "^7.0.0"
+flake8 = "^7.3.0"
+python-dotenv = "^1.2.1"
+psycopg2-binary = "^2.9.11"
+redis = "^7.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 119
+exclude = '''
+(
+  /(
+      \.eggs         # Исключить несколько общих каталогов
+    | \.git          # в корне проекта
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | dist
+  )/
+  | foo.py           # Также отдельно исключить файл с именем foo.py
+                     # в корне проекта
+)
+'''
+[tool.isort]
+line_length = 119

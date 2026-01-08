@@ -1,0 +1,21 @@
+{% extends 'MailingListManagement/base.html' %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная страница</title>
+</head>
+<body>
+    <h1>Добро пожаловать на главную страницу!</h1>
+    <h2>Статистика:</h2>
+    <ul>
+        <li>Общее количество созданных рассылок: {{ total_newsletters }}</li>
+        <li>Количество активных рассылок: {{ active_newsletters }}</li>
+        <li>Количество уникальных получателей: {{ unique_recipients }}</li>
+        <li>Количество успешных попыток рассылок: {{ successful_attempts }}</li>
+        <li>Количество неуспешных попыток рассылок: {{ failed_attempts }}</li>
+        <li>Общее количество отправленных сообщений: {{ sent_messages }}</li>
+    </ul>
+</body>
+</html>
+{% endblock %}
