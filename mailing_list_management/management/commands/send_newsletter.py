@@ -22,12 +22,11 @@ class Command(BaseCommand):
                     response = send_mail(
                         newsletter.message.subject,
                         newsletter.message.body,
-                        "from@example.com",  # Замените на ваш email
+                        "from@example.com",
                         [recipient.email],
                         fail_silently=False,
                     )
 
-                    # Создать запись о попытке отправки
                     EmailAttempt.objects.create(
                         newsletter=newsletter,
                         recipient=recipient,
@@ -35,7 +34,6 @@ class Command(BaseCommand):
                         server_response=f"Письмо успешно отправлено: {response}",
                     )
                 except Exception as e:
-                    # Создать запись о неуспешной попытке отправки
                     EmailAttempt.objects.create(
                         newsletter=newsletter,
                         recipient=recipient,

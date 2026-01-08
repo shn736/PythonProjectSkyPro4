@@ -3,30 +3,14 @@ from django.views.decorators.cache import cache_page
 
 from mailing_list_management.apps import MailingListManagementConfig
 
-from .views import (
-    MessageCreateView,
-    MessageDeleteView,
-    MessageDetailView,
-    MessageListView,
-    MessageUpdateView,
-    NewsletterCreateView,
-    NewsletterDeleteView,
-    NewsletterDetailView,
-    NewsletterListView,
-    NewsletterUpdateView,
-    RecipientCreateView,
-    RecipientDeleteView,
-    RecipientDetailView,
-    RecipientListView,
-    RecipientUpdateView,
-    SendNewsletterView,
-    homepage,
-)
+from .views import (MessageCreateView, MessageDeleteView, MessageDetailView, MessageListView, MessageUpdateView,
+                    NewsletterCreateView, NewsletterDeleteView, NewsletterDetailView, NewsletterListView,
+                    NewsletterUpdateView, RecipientCreateView, RecipientDeleteView, RecipientDetailView,
+                    RecipientListView, RecipientUpdateView, SendNewsletterView, homepage)
 
 app_name = MailingListManagementConfig.name
 
 urlpatterns = [
-    # Получатели
     path("", homepage, name="homepage"),
     path("recipients/", RecipientListView.as_view(), name="recipient_list"),
     path("recipients/create/", RecipientCreateView.as_view(), name="recipient_create"),
@@ -45,7 +29,6 @@ urlpatterns = [
         RecipientDeleteView.as_view(),
         name="recipient_delete",
     ),
-    # Сообщения
     path("messages/", MessageListView.as_view(), name="message_list"),
     path("messages/create/", MessageCreateView.as_view(), name="message_create"),
     path(
@@ -55,7 +38,6 @@ urlpatterns = [
     ),
     path("messages/update/<int:pk>/", MessageUpdateView.as_view(), name="message_update"),
     path("messages/delete/<int:pk>/", MessageDeleteView.as_view(), name="message_delete"),
-    # Рассылки
     path("newsletters/", NewsletterListView.as_view(), name="newsletter_list"),
     path("newsletters/create/", NewsletterCreateView.as_view(), name="newsletter_create"),
     path(
