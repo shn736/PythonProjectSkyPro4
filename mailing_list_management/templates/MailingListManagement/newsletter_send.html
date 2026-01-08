@@ -1,0 +1,58 @@
+{% extends 'MailingListManagement/base.html' %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отправка Рассылки</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Отправка Рассылки: {{ newsletter.message.subject }}</h1>
+
+        {% if messages %}
+            <div class="alert alert-success">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if error_messages %}
+            <div class="alert alert-danger">
+                {% for error in error_messages %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="newsletter_id">Идентификатор рассылки:</label>
+                <input type="text" class="form-control" id="newsletter_id" value="{{ newsletter.id }}" readonly>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Запустить рассылку</button>
+        </form>
+
+        <div class="mt-5">
+            <h3>Cостояние рассылки</h3>
+            <p>
+                {% if newsletter.start_time <= current_time <= newsletter.end_time %}
+                    Рассылка активна. (Статус: {{ newsletter.status }})
+                {% else %}
+                    Рассылка неактивна.
+                {% endif %}
+            </p>
+            <p>Дата начала: {{ newsletter.start_time }}</p>
+            <p>Дата окончания: {{ newsletter.end_time }}</p>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{% endblock %}

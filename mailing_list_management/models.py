@@ -2,19 +2,51 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
+from users.models import User
+
 
 class Recipient(models.Model):
+    owner = models.ForeignKey(
+        User,
+        verbose_name="Владелец",
+        help_text="Укажите владельца товара",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=255)
     comment = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = "Получатель рассылки"
+        verbose_name_plural = "Получатели рассылки"
+        permissions = [
+            ("manage_recipients", "Can manage recipients"),
+        ]
 
     def __str__(self):
         return self.full_name
 
 
 class Message(models.Model):
+    owner = models.ForeignKey(
+        User,
+        verbose_name="Владелец",
+        help_text="Укажите владельца товара",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
     subject = models.CharField(max_length=255)
     body = models.TextField()
+
+    class Meta:
+        verbose_name = "Сообщение"
+        verbose_name_plural = "Сообщения"
+        permissions = [
+            ("manage_messages", "Can manage messages"),
+        ]
 
     def __str__(self):
         return self.subject
@@ -26,7 +58,14 @@ class Newsletter(models.Model):
         ("Запущена", "Запущена"),
         ("Завершена", "Завершена"),
     ]
-
+    owner = models.ForeignKey(
+        User,
+        verbose_name="Владелец",
+        help_text="Укажите владельца товара",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="Создана")
@@ -59,6 +98,13 @@ class Newsletter(models.Model):
         # Вызываем валидацию
         self.clean()
         super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Рассылка"
+        verbose_name_plural = "Рассылки"
+        permissions = [
+            ("manage_newsletters", "Can manage newsletters"),
+        ]
 
     def __str__(self):
         return f"Рассылка: {self.message.subject}"

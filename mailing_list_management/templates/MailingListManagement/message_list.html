@@ -1,24 +1,39 @@
 {% extends 'MailingListManagement/base.html' %}
 {% load my_tags %}
 {% block content %}
-<div class="album py-5 bg-body-tertiary">
-    <div class="container">
+<div class="container py-5">
+    <h1 class="mb-4">Список Сообщений</h1>
+
+    <div class="mb-3">
+        <a class="btn btn-success" href="{% url 'mailing_list_management:message_create' %}" role="button">Создать Новое Сообщение</a>
+    </div>
+
+    <div class="album bg-body-tertiary">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
             {% for message in object_list %}
+            {% if message.owner == request.user %}
             <div class="col">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <p class="card-text">{{ message.subject}}</p>
-                        <p class="card-text">{{ message.body}}</p>
+                        <h5 class="card-title">{{ message.subject }}</h5>
+                        <p class="card-text">{{ message.body|truncatewords:30 }}</p>
+                        <p class="card-text"><small class="text-muted">Создано: {{ message.created_at|date:"d M Y H:i" }}</small></p>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
                                 <a class="btn btn-primary" href="{% url 'mailing_list_management:message' message.pk %}" role="button">Посмотреть</a>
-                                <a class="btn btn-primary" href="{% url 'mailing_list_management:message_update' message.pk %}" role="button">Редактировать</a>
-                                <a class="btn btn-primary" href="{% url 'mailing_list_management:message_delete' message.pk %}" role="button">Удалить</a>
+                                <a class="btn btn-warning" href="{% url 'mailing_list_management:message_update' message.pk %}" role="button">Редактировать</a>
+                                <a class="btn btn-danger" href="{% url 'mailing_list_management:message_delete' message.pk %}"
+                                   onclick="return confirm('Вы уверены, что хотите удалить это сообщение?');" role="button">Удалить</a>
                             </div>
-                            <small class="text-body-secondary">9 mins</small>
                         </div>
                     </div>
+                </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    Нет сообщений для отображения.
                 </div>
             </div>
             {% endfor %}
